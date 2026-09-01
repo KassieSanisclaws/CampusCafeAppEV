@@ -6,29 +6,163 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import com.raywenderlich.campuscafeappev.mainUI.HomeScreen
 import com.raywenderlich.campuscafeappev.menu.MenuScreen
+import androidx.compose.runtime.remember
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.raywenderlich.campuscafeappev.dataclass.MenuItem
+import com.raywenderlich.campuscafeappev.menu.MenuDetailsScreen
+import com.raywenderlich.campuscafeappev.model.Category
+import com.raywenderlich.campuscafeappev.order.OrderManager
+import com.raywenderlich.campuscafeappev.order.OrderScreen
 
 object Routes {
     const val HOME = "home"
     const val MENU = "menu"
     const val MENU_DETAILS = "menu/{itemId}"
+    const val ORDER = "order"
 }
 
 @Composable
 fun AppNavigation() {
+    // Navigation Controller manges the movement between screens.
      val navController = rememberNavController()
 
+    // OrderManager stopres and manges the current order.
+    val orderManager = remember {
+        OrderManager()
+    }
+
+    val menuItems = listOf(
+        MenuItem(
+            id = 1,
+            name = "Coffee",
+            price = 2.50,
+            category = Category.DRINK
+        ),
+
+        MenuItem(
+                 id = 2,
+                 name = "Tea",
+                 price = 2.00,
+                 category = Category.DRINK
+            ),
+
+        MenuItem(
+                id = 3,
+                name = "Donut",
+                price = 1.75,
+                category = Category.DESSERT
+           ),
+
+        MenuItem(
+                id = 4,
+                name = "Sandwich",
+                price = 6.50,
+                category = Category.FOOD
+           )
+    )
+
+    // NavHost contains all the screens in the application.
     NavHost(
         navController= navController,
         startDestination = Routes.HOME
     ) {
+        // HOMESCREEN:
         composable(Routes.HOME) {
-            HomeScreen(onMenuClick = {
-                navController.navigate(Routes.MENU)
-            }
+            // Homescreen tells the application that the user wants to see/ view the menu.
+            HomeScreen(
+                onMenuClick = {
+                    navController.navigate(Routes.MENU)
+                }
             )
         }
         composable(Routes.MENU) {
-            MenuScreen()
+            MenuScreen(
+                // Give MenuScreen the menu data.
+                menuItems = menuItems,
+                // When the user selkects an item, navigate to the details screen.
+                onItemClick = { item ->
+                    navController.navigate(
+                        "menu/${item.id}"
+                    )
+                }
+            )
+        }
+
+        // Menu Details:
+        composable(
+            route = Routes.MENU_DETAILS,
+            arguments = listOf(
+                navArgument("itemId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val itemId = backStackEntry
+                .arguments
+                ?.getInt("itemId")
+
+            val selectedItem = menuItems.find {
+                it.id == itemId
+            }
+
+            if (selectedItem != null) {
+
+                MenuDetailsScreen(
+                    // Give the selected menu item to the screen.
+                    item = selectedItem,
+
+                    onBackClick = {
+                        // Remove the current screen from
+                        // the navigation back stack.
+                        navController.popBackStack()
+                    },
+
+                    onAddToOrder = {
+                        // Add the selected item to the order.
+                        orderManager.addItem(
+                            selectedItem
+                        )
+
+                        // After adding the item,
+                        // navigate to the order screen.
+                        navController.navigate(
+                            Routes.ORDER
+                        )
+                    }
+                )
+            }
+        }
+        // ORDER
+        composable(Routes.ORDER) {
+            OrderScreen(
+                //Give OrderScreen the current order items.
+                orderItems = orderManager.items,
+
+                // Gives the OrderScreen the current total.
+                total = orderManager.getTotal(),
+
+                onRemoveItem = { orderItem ->
+                    orderManager.removeItem(
+                        orderItem.menuItem
+                    )
+                },
+                onClearOrder = {
+                    orderManager.clearOrder()
+                },
+
+                onCheckout = {
+                    orderManager.clearOrder()
+
+                    navController.navigate(
+                        Routes.HOME
+                    ) {
+                        popUpTo(Routes.HOME) {
+                            inclusive = false
+                        }
+                    }
+                }
+            )
         }
     }
 }

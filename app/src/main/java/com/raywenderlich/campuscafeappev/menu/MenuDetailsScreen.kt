@@ -13,7 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.raywenderlich.campuscafeappev.dataclass.MenuItem
 
 @Composable
-fun MenuDetailsScreen( item: MenuItem, onAddToOrder: () -> Unit ) {
+fun MenuDetailsScreen(
+      item: MenuItem,
+      onBackClick: () -> Unit,
+      onAddToOrder: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -29,6 +33,12 @@ fun MenuDetailsScreen( item: MenuItem, onAddToOrder: () -> Unit ) {
               modifier = Modifier.padding( top = 16.dp )
         ) {
             Text( text = "Add To Order ")
+        }
+        Button(
+            onClick = onBackClick,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Text( text = "Back To Menu")
         }
     }
 }

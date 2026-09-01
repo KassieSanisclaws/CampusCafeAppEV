@@ -19,52 +19,35 @@ import com.raywenderlich.campuscafeappev.dataclass.MenuItem
 import com.raywenderlich.campuscafeappev.model.Category
 
 @Composable
-fun MenuScreen() {
-    val menuItems = listOf(
-        MenuItem(
-            id = 1,
-            name = "Coffee",
-            price = 2.50,
-            category = Category.DRINK
-        ),
-        MenuItem(
-            id = 2,
-            name = "Tea",
-            price = 2.00,
-            category = Category.DRINK
-        ),
-        MenuItem(
-            id = 3,
-            name = "Sour Creme Glazed Donut",
-            price = 1.50,
-            category = Category.DESSERT
-        ),
-        MenuItem(
-            id = 4,
-            name = "Italian Meatball Sandwich",
-            price = 6.50,
-            category = Category.FOOD
-        )
-    )
+fun MenuScreen(
+    menuItems: List<MenuItem>,
+    onItemClick: (MenuItem) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        Text ( text = "Campus Cafe Menu" )
+        Text( text =  "☕ Campus Café Menu")
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(top = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(menuItems) { item ->
-               MenuItemCard( item = item)
+                MenuItemCard(
+                    item = item,
+                    onItemClick = onItemClick
+                  )
+               }
             }
         }
     }
-}
 
 @Composable
-fun MenuItemCard( item: MenuItem) {
+fun MenuItemCard(
+         item: MenuItem,
+         onItemClick: (MenuItem) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -81,8 +64,8 @@ fun MenuItemCard( item: MenuItem) {
                 horizontalArrangement = Arrangement.End
             ) {
                 Button( onClick = {
-                                    // TO Be Implemented
-                                 }) {
+                    onItemClick(item)
+                }) {
                     Text( text = "View Details ")
                 }
             }

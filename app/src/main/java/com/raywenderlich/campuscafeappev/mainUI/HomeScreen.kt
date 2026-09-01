@@ -17,7 +17,9 @@ import androidx.compose.runtime.remember
 
 
 @Composable
-fun HomeScreen( onMenuClick: () -> Unit) {
+fun HomeScreen(
+    onMenuClick: () -> Unit
+) {
     var points by remember { mutableIntStateOf(0) }
 
     Column(
