@@ -1,25 +1,27 @@
 package com.raywenderlich.campuscafeappev.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import com.raywenderlich.campuscafeappev.mainUI.HomeScreen
 import com.raywenderlich.campuscafeappev.menu.MenuScreen
-import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.raywenderlich.campuscafeappev.dataclass.MenuItem
 import com.raywenderlich.campuscafeappev.menu.MenuDetailsScreen
-import com.raywenderlich.campuscafeappev.model.Category
-import com.raywenderlich.campuscafeappev.order.OrderManager
 import com.raywenderlich.campuscafeappev.order.OrderScreen
+import com.raywenderlich.campuscafeappev.viewModel.CampusCafeViewModel
+import com.raywenderlich.campuscafeappev.ui.theme.profile.ProfileScreen
 
 object Routes {
     const val HOME = "home"
     const val MENU = "menu"
     const val MENU_DETAILS = "menu/{itemId}"
     const val ORDER = "order"
+    const val PROFILE = "profile"
 }
 
 @Composable
@@ -27,40 +29,14 @@ fun AppNavigation() {
     // Navigation Controller manges the movement between screens.
      val navController = rememberNavController()
 
-    // OrderManager stopres and manges the current order.
-    val orderManager = remember {
-        OrderManager()
-    }
-
-    val menuItems = listOf(
-        MenuItem(
-            id = 1,
-            name = "Coffee",
-            price = 2.50,
-            category = Category.DRINK
-        ),
-
-        MenuItem(
-                 id = 2,
-                 name = "Tea",
-                 price = 2.00,
-                 category = Category.DRINK
-            ),
-
-        MenuItem(
-                id = 3,
-                name = "Donut",
-                price = 1.75,
-                category = Category.DESSERT
-           ),
-
-        MenuItem(
-                id = 4,
-                name = "Sandwich",
-                price = 6.50,
-                category = Category.FOOD
-           )
-    )
+   // ViewModel Takes place of orderManager:
+    val viewModel: CampusCafeViewModel = viewModel()
+    // ORDER-ITEMS:
+    val orderItems by viewModel.orderItems.collectAsStateWithLifecycle()
+    // OBSERVE Total:
+    val total by viewModel.total.collectAsStateWithLifecycle()
+    // POINTS-TRACKER:
+    val points by viewModel.points.collectAsStateWithLifecycle()
 
     // NavHost contains all the screens in the application.
     NavHost(
@@ -71,16 +47,20 @@ fun AppNavigation() {
         composable(Routes.HOME) {
             // Homescreen tells the application that the user wants to see/ view the menu.
             HomeScreen(
+                points = points,
                 onMenuClick = {
                     navController.navigate(Routes.MENU)
+                },
+                onProfileClick = {
+                    navController.navigate(Routes.PROFILE)
                 }
             )
         }
         composable(Routes.MENU) {
             MenuScreen(
                 // Give MenuScreen the menu data.
-                menuItems = menuItems,
-                // When the user selkects an item, navigate to the details screen.
+                menuItems = viewModel.menuItems,
+                // When the user selects an item, navigate to the details screen.
                 onItemClick = { item ->
                     navController.navigate(
                         "menu/${item.id}"
@@ -102,7 +82,7 @@ fun AppNavigation() {
                 .arguments
                 ?.getInt("itemId")
 
-            val selectedItem = menuItems.find {
+            val selectedItem = viewModel.menuItems.find {
                 it.id == itemId
             }
 
@@ -120,7 +100,7 @@ fun AppNavigation() {
 
                     onAddToOrder = {
                         // Add the selected item to the order.
-                        orderManager.addItem(
+                        viewModel.addItem(
                             selectedItem
                         )
 
@@ -137,23 +117,29 @@ fun AppNavigation() {
         composable(Routes.ORDER) {
             OrderScreen(
                 //Give OrderScreen the current order items.
-                orderItems = orderManager.items,
+                orderItems = orderItems,
 
                 // Gives the OrderScreen the current total.
-                total = orderManager.getTotal(),
+                total = total,
 
+                // REMOVE The Selected Item:
                 onRemoveItem = { orderItem ->
-                    orderManager.removeItem(
+                    viewModel.removeItem(
                         orderItem.menuItem
                     )
                 },
                 onClearOrder = {
-                    orderManager.clearOrder()
+                    viewModel.clearOrder()
                 },
 
                 onCheckout = {
-                    orderManager.clearOrder()
+                    // AWARD POINTS:
+                    viewModel.addPoints(total.toInt())
 
+                    // CLEAR The Completed Order:
+                    viewModel.clearOrder()
+
+                    // RETURN TO HOMESCREEN:
                     navController.navigate(
                         Routes.HOME
                     ) {
@@ -164,5 +150,18 @@ fun AppNavigation() {
                 }
             )
         }
+        // PROFILE [Screen]
+        composable(Routes.PROFILE) {
+            ProfileScreen(
+                points = points,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
+
+
     }
 }

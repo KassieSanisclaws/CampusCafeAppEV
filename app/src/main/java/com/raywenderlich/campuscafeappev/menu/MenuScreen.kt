@@ -12,11 +12,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.Button
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raywenderlich.campuscafeappev.dataclass.MenuItem
-import com.raywenderlich.campuscafeappev.model.Category
 
 @Composable
 fun MenuScreen(

@@ -10,18 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-
 
 @Composable
 fun HomeScreen(
-    onMenuClick: () -> Unit
+    points: Int,
+    onMenuClick: () -> Unit,
+    onProfileClick: () -> Unit
 ) {
-    var points by remember { mutableIntStateOf(0) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,5 +30,14 @@ fun HomeScreen(
         Button( onClick = onMenuClick) {
             Text( text = "View Menu" )
         }
+        Button(
+            onClick = onProfileClick,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Text(text = "Student Profile")
+        }
+
+
+
     }
 }
