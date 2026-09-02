@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.raywenderlich.campuscafeappev.menu.MenuDetailsScreen
 import com.raywenderlich.campuscafeappev.order.OrderScreen
+import com.raywenderlich.campuscafeappev.ui.theme.checkout.CheckOutScreen
 import com.raywenderlich.campuscafeappev.viewModel.CampusCafeViewModel
 import com.raywenderlich.campuscafeappev.ui.theme.profile.ProfileScreen
 
@@ -22,6 +23,7 @@ object Routes {
     const val MENU_DETAILS = "menu/{itemId}"
     const val ORDER = "order"
     const val PROFILE = "profile"
+    const val CHECKOUT = "checkout"
 }
 
 @Composable
@@ -122,6 +124,20 @@ fun AppNavigation() {
                 // Gives the OrderScreen the current total.
                 total = total,
 
+                // INCREASE Quantity:
+                onIncreaseQuantity = { orderItem ->
+                    viewModel.increaseQuantity(
+                        orderItem.menuItem
+                    )
+                },
+
+                // DECREASE Quantity:
+                onDecreaseQuantity = { orderItem ->
+                    viewModel.decreaseQuantity(
+                        orderItem.menuItem
+                    )
+                },
+
                 // REMOVE The Selected Item:
                 onRemoveItem = { orderItem ->
                     viewModel.removeItem(
@@ -133,16 +149,28 @@ fun AppNavigation() {
                 },
 
                 onCheckout = {
-                    // AWARD POINTS:
-                    viewModel.addPoints(total.toInt())
-
-                    // CLEAR The Completed Order:
-                    viewModel.clearOrder()
-
-                    // RETURN TO HOMESCREEN:
                     navController.navigate(
-                        Routes.HOME
-                    ) {
+                        Routes.CHECKOUT
+                    )
+                }
+            )
+        }
+
+        // CHECKOUT:
+        composable(Routes.CHECKOUT) {
+            CheckOutScreen(
+                total = total,
+                pointsEarned = total.toInt(),
+
+                onDoneClick = {
+                   // AWARD the points:
+                   viewModel.addPoints(
+                       total.toInt()
+                   )
+                  // CLEAR the completed order:
+                  viewModel.clearOrder()
+
+                    navController.navigate(Routes.HOME) {
                         popUpTo(Routes.HOME) {
                             inclusive = false
                         }
@@ -150,6 +178,7 @@ fun AppNavigation() {
                 }
             )
         }
+
         // PROFILE [Screen]
         composable(Routes.PROFILE) {
             ProfileScreen(
@@ -159,9 +188,5 @@ fun AppNavigation() {
                 }
             )
         }
-
-
-
-
     }
 }

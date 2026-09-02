@@ -112,6 +112,60 @@ class CampusCafeViewModel: ViewModel() {
             getTotal()
         }
     }
+    // INCREASE QUANTITY:
+    fun increaseQuantity(
+        menuItem: MenuItem
+    ) {
+        val currentOrder = _orderItems.value
+        val updatedOrder = currentOrder.map { orderItem ->
+            if (orderItem.menuItem.id == menuItem.id) {
+                orderItem.copy(
+                    quantity = orderItem.quantity + 1
+                )
+            } else {
+                orderItem
+            }
+        }
+        _orderItems.value = updatedOrder
+
+        // RE-CALCULATE TOTAL:
+        getTotal()
+    }
+
+    // DECREASE QUANTITY:
+    fun decreaseQuantity(
+        menuItem: MenuItem
+    ) {
+        val currentOrder = _orderItems.value
+        val existingItem = currentOrder.find {
+            it.menuItem.id == menuItem.id
+        }
+        if (existingItem != null) {
+            if (existingItem.quantity > 1) {
+             // REDUCE the quantity by 1:
+             val updatedOrder = currentOrder.map { orderItem ->
+                 if (orderItem.menuItem.id == menuItem.id) {
+                     orderItem.copy(
+                         quantity = orderItem.quantity - 1
+                     )
+                 } else {
+                     orderItem
+                 }
+              }
+              _orderItems.value = updatedOrder
+            } else {
+                // If Quantity is already 1 remove the item from the order.
+                val updatedOrder = currentOrder.filter {
+                    it.menuItem.id != menuItem.id
+                }
+                _orderItems.value= updatedOrder
+            }
+            //RE-CALCULATE:
+            getTotal()
+        }
+    }
+
+
     // CLEAR Order:
     fun clearOrder() {
         _orderItems.value = emptyList()

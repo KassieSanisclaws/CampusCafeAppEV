@@ -20,6 +20,8 @@ import com.raywenderlich.campuscafeappev.dataclass.OrderItem
 fun OrderScreen(
     orderItems: List<OrderItem>,
     total: Double,
+    onIncreaseQuantity: (OrderItem) -> Unit,
+    onDecreaseQuantity: (OrderItem) -> Unit,
     onRemoveItem: (OrderItem) -> Unit,
     onClearOrder: () -> Unit,
     onCheckout: () -> Unit
@@ -31,7 +33,8 @@ fun OrderScreen(
     ) {
         Text(text = "Your Order")
            if(orderItems.isEmpty()){
-                Text(text = "No Order's - Your Cart Is Empty!", modifier = Modifier.padding(top = 16.dp))
+                Text(text = "No Order's - Your Cart Is Empty!",
+                    modifier = Modifier.padding(top = 16.dp))
               } else {
                   LazyColumn(
                       modifier = Modifier
@@ -42,6 +45,8 @@ fun OrderScreen(
                       items(orderItems) { orderItem ->
                           OrderItemCard(
                               orderItem = orderItem,
+                              onIncreaseQuantity = onIncreaseQuantity,
+                              onDecreaseQuantity = onDecreaseQuantity,
                               onRemoveItem = onRemoveItem
                           )
                       }
@@ -70,6 +75,8 @@ fun OrderScreen(
 @Composable
 fun OrderItemCard(
     orderItem: OrderItem,
+    onIncreaseQuantity: (OrderItem) -> Unit,
+    onDecreaseQuantity: (OrderItem) -> Unit,
     onRemoveItem: (OrderItem) -> Unit
 ) {
     Card(
@@ -81,27 +88,61 @@ fun OrderItemCard(
             // Menu Item Name:
             Text(text = orderItem.menuItem.name)
             // Quantity:
-            Text(text = "Quantity: ${orderItem.quantity}")
-            // Price for the item:
-            Text(text = "Price: $${"%.2f".format(orderItem.menuItem.price)}")
-            // Price for all items
-            Text(text = "Subtotal: $${"%.2f" .format(
-                orderItem.menuItem.price * orderItem.quantity
-            )}")
+            Text(
+                text = "Quantity: ${orderItem.quantity}",
+                modifier = Modifier.padding(top = 8.dp)
+                )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
+                // DECREASE Button:
                 Button(
                     onClick = {
-                        onRemoveItem(orderItem)
+                        onDecreaseQuantity(orderItem)
                     }
                 ) {
-                    Text(text = "Remove Item")
+                    Text(text = "-")
+                }
+                // CURRENT Quantity
+                Text(
+                    text = "${orderItem.quantity}",
+                    modifier = Modifier.padding(
+                        horizontal = 24.dp,
+                        vertical = 12.dp
+                    )
+                )
+                // INCREASE Button
+                Button(
+                    onClick = {
+                        onIncreaseQuantity(orderItem)
+                    }
+                ) {
+                    Text(text = "+")
                 }
             }
-        }
-    }
+            // Price for the item:
+            Text(text = "Price: $${"%.2f".format(orderItem.menuItem.price)}")
+            // Price for all items
+            Text(text = "Subtotal: $${"%.2f" .format(
+                orderItem.menuItem.price * orderItem.quantity
+            )}")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = {
+                            onRemoveItem(orderItem)
+                        }
+                    ) {
+                        Text(text = "Remove Item")
+                    }
+                }
+          }
+     }
 }

@@ -9,7 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.raywenderlich.campuscafeappev.dataclass.MenuItem
 
 @Composable
@@ -25,9 +28,22 @@ fun MenuDetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text( text = item.name )
-        Text( text = "Category: ${ item.category }")
-        Text( text = "Price: $${ item.price }")
+        Text(
+            text = item.name,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold
+            )
+        Text(
+            text = "Category: ${ item.category }",
+            modifier = Modifier.padding(top = 12.dp),
+            fontSize = 18.sp
+            )
+        Text(
+            text = "Price: $${"%.2f" .format(item.price)}",
+            modifier = Modifier.padding(top = 8.dp),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+            )
         Button(
               onClick = onAddToOrder,
               modifier = Modifier.padding( top = 16.dp )

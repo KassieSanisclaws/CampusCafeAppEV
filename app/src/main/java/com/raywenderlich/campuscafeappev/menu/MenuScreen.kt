@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.Button
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.raywenderlich.campuscafeappev.dataclass.MenuItem
 
 @Composable
@@ -26,9 +28,22 @@ fun MenuScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text( text =  "☕ Campus Café Menu")
+        Text(
+            text =  "☕ Campus Café Menu",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+            )
+        Text(
+            text = "Choose Something Delicious!",
+            modifier = Modifier.padding(top = 4.dp),
+            fontSize = 16.sp
+        )
         LazyColumn(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(top = 16.dp)
+            ,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(menuItems) { item ->
@@ -52,9 +67,21 @@ fun MenuItemCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text( text = item.name )
-            Text( text = "Category: ${ item.category }")
-            Text( text = "$${ item.price }")
+            Text(
+                text = item.name,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+                )
+            Text(
+                text = "Category: ${ item.category }",
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Text(
+                text = "$${"%.2f" .format(item.price) }",
+                modifier = Modifier.padding(top = 8.dp),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+                )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
