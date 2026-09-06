@@ -77,7 +77,7 @@ fun MenuItemCard(
                 modifier = Modifier.padding(top = 4.dp)
             )
             Text(
-                text = "$${"%.2f" .format(item.price) }",
+                text = "$${"%.2f" .format(item.price)}",
                 modifier = Modifier.padding(top = 8.dp),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
@@ -85,7 +85,7 @@ fun MenuItemCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button( onClick = {

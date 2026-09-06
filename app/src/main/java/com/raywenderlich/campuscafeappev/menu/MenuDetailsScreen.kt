@@ -46,7 +46,7 @@ fun MenuDetailsScreen(
             )
         Button(
               onClick = onAddToOrder,
-              modifier = Modifier.padding( top = 16.dp )
+              modifier = Modifier.padding( top = 24.dp )
         ) {
             Text( text = "Add To Order ")
         }
